@@ -1,0 +1,90 @@
+:root{
+    --light-color: #F2EFE9;
+    --dark-color: #191516;
+    --green-color: #00B295;
+    --red-color: #AB2346;
+    --yellow-color: #FFBA08;
+    --blue-color: #2D7DD2;
+    --link-color: #2D7DD2;
+    --btn-primary-color: #2D7DD2;
+    --btn-secondary-color: #F2EFE9;
+}
+
+.financials-card {
+    /*background-color: var(--light-color)!important;*/
+    background-image: url('../img/vintage-leaves.png');
+}
+
+table.table-bordered > thead > tr > th {
+    border: 1px solid var(--dark-color);
+}
+
+.thead-light th {
+    background-color: var(--light-color)!important;
+}
+
+.thead-dark th {
+    background-color: var(--dark-color)!important;
+}
+
+.thead-green th {
+    background-color: var(--green-color)!important;
+}
+
+.fa-check {
+    color: var(--green-color);
+}
+
+.fa-times-circle {
+    color: var(--red-color);
+}
+
+.fa-exclamation-triangle {
+    color: var(--yellow-color);
+}
+
+#buy-sell-only {
+    display: none;
+}
+
+#alerts-header:hover {
+    text-decoration: none;
+}
+
+.alert-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#transactions-header:hover {
+    text-decoration: none;
+}
+
+.transactions-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.jobs-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#portfolio-header:hover {
+    text-decoration: none;
+}
+
+.portfolio-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.watching-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.owned-section-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}

@@ -1,0 +1,135 @@
+/* COLORS
+   C9DAEA - beau blue (grayish) / isabelline F2EFE9
+   03F7EB - fluorescent blue / bright navy blue 2D7DD2
+   00B295 - jungle green
+   FFBA08 - selective yellow
+   191516 - smoky black
+   AB2346 - amaranth purple (reddish)
+*/
+:root{
+    --light-color: #F2EFE9;
+    --dark-color: #191516;
+    --green-color: #00B295;
+    --red-color: #AB2346;
+    --yellow-color: #FFBA08;
+    --link-color: #2D7DD2;
+    --btn-primary-color: #2D7DD2;
+    --btn-secondary-color: #F2EFE9;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Ubuntu', sans-serif!important;
+    margin-bottom: 60px; /* Margin bottom by footer height */
+}
+
+/* Boostrap overrides */
+@media (min-width: 1200px) {
+    .container{
+        max-width: 1400px;
+    }
+}
+
+.bg-light {
+    background-color: var(--light-color)!important;
+}
+
+.bg-dark {
+    background-color: var(--dark-color)!important;
+}
+
+.btn-light {
+    background-color: var(--light-color)!important;
+    border-color: var(--light-color)!important;
+}
+
+.btn-dark {
+    background-color: var(--dark-color)!important;
+}
+
+.btn-primary {
+    background-color: var(--btn-primary-color)!important;
+    border-color: var(--btn-primary-color)!important;
+}
+
+.btn-secondary {
+    background-color: var(--btn-secondary-color)!important;
+    border-color: var(--btn-secondary-color)!important;
+}
+
+.text-light {
+    color: var(--light-color)!important;
+}
+
+.text-dark {
+    color: var(--dark-color)!important;
+}
+
+.text-green {
+    color: var(--green-color)!important;
+}
+
+.text-red {
+    color: var(--red-color)!important;
+}
+
+.nav-link {
+    color: var(--link-color)!important;
+}
+
+.tab-content {
+    width: 100%;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background: var(--dark-color)!important;
+    color: var(--light-color)!important;
+}
+/* end of overrides */
+
+.custom-h2 {
+    background: var(--green-color);
+    color: var(--dark-color);
+    padding-left: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 3px;
+    border: 3px solid var(--light-color);
+}
+
+.fas, .fab {
+    color: var(--red-color);
+}
+
+.fa-cog, .fa-eye {
+    color: var(--blue-color);
+}
+
+.hr-ruler-white {
+    border: 2px solid var(--light-color);
+}
+
+.hr-ruler-green {
+    border: 2px solid var(--green-color);
+}
+
+.text-light-custom-a {
+    color: var(--link-color);
+}
+
+.text-light-custom-a:hover {
+    color: var(--light-color);
+    text-decoration: none;
+}
+
+.positive {
+    color: var(--green-color);
+}
+
+.negative {
+    color: var(--red-color);
+}

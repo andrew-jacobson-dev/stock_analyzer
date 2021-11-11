@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<!-- Custom CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/stock_analysis.css' %}">
+<form action="{% url 'analyzer_index' %}" method="post">
+    <div class="row mb-3">
+        {% csrf_token %}
+            <div class="col-md-12">
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        <h2 class="text-light">{{ chosen_stock_name }}</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <h2 class="small">{{ line_chart_form.stock }}</h2>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        <h2 class="small text-light font-italic">numbers as of close {{ most_recent_close_date }}</h2>
+                    </div>
+<!--                    <div class="col-md-4 text-light text-center">-->
+<!--                        {{ line_chart_form.stock_type }}-->
+<!--                    </div>-->
+                </div>
+                <hr class="hr-ruler-white">
+                <div class="form-group row">
+                    <div class="col">
+                        <canvas id="stock-chart" style="width:100%;"></canvas>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col text-center">
+                        {% for date in date_ranges %}
+                            {% if date.t_short_name == selected_date_range %}
+                                <button type="submit" class="btn btn-primary m-1 pl-3 pr-3" id="{{ date.t_short_name }}" name="date_range" value="{{ date.t_short_name }}">{{ date.t_short_name }}</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-light m-1 pl-3 pr-3" id="{{ date.t_short_name }}" name="date_range" value="{{ date.t_short_name }}">{{ date.t_short_name }}</button>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="form-group row mb-3">
+        <div class="col-md-4 text-primary">
+            {{ line_chart_form.chart_values.label }} {{ line_chart_form.chart_values }}
+        </div>
+        <div class="col-md-3 text-primary">
+            {{ line_chart_form.chart_type.label }} {{ line_chart_form.chart_type }}
+        </div>
+        <div class="col-md-3 text-primary">
+            {{ line_chart_form.y_axis_start_at_zero.label }} {{ line_chart_form.y_axis_start_at_zero }}
+        </div>
+    </div>
+</form>
+<br>
+<!--<div class="row mb-3">-->
+<!--    <div class="col-md-2">-->
+<!--        <h2 class="text-light">stats</h2>-->
+<!--        <hr class="hr-ruler-white">-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="row mb-3">-->
+<!--    <div class="col-md-10">-->
+<!--        <table class="table table-sm table-hover">-->
+<!--            <thead class="thead-light">-->
+<!--                <tr>-->
+<!--                    <th scope="col">Date</th>-->
+<!--                    <th scope="col">Open</th>-->
+<!--                    <th scope="col">Close</th>-->
+<!--                    <th scope="col">Open/Close Δ</th>-->
+<!--                </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--                {% for label, data1, data2, data3 in table_data %}-->
+<!--                    {% if data3 > 0 %}-->
+<!--                        <tr class="table-success">-->
+<!--                    {% elif data3 < 0 %}-->
+<!--                        <tr class="table-danger">-->
+<!--                    {% else %}-->
+<!--                        <tr>-->
+<!--                    {% endif %}-->
+<!--                        <th scope="row">{{ label }}</th>-->
+<!--                        <td>{{ data1 }}</td>-->
+<!--                        <td>{{ data2 }}</td>-->
+<!--                        <td>{{ data3 }}</td>-->
+<!--                </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+<!--</div>-->
+<script>
+
+    var config = {
+      type: '{{ line_chart_chart_type }}',
+      data: {
+        datasets: [{
+          data: {{ line_1_data|safe }},
+          backgroundColor: '#26a745',
+          borderColor: '#26a745',
+          label: 'open',
+          fill: false,
+          hidden: {{ line_1_data_hidden }}
+        },{
+          data: {{ line_2_data|safe }},
+          backgroundColor: '#ef0101',
+          borderColor: '#ef0101',
+          label: 'close',
+          fill: false,
+          hidden: {{ line_2_data_hidden }}
+        },{
+          data: {{ line_3_data|safe }},
+          backgroundColor: '#f7f7f7',
+          borderColor: '#f7f7f7',
+          label: 'open/close diff',
+          fill: false,
+          hidden: {{ line_3_data_hidden }}
+        },{
+          data: {{ line_4_data|safe }},
+          backgroundColor: '#26a745',
+          borderColor: '#26a745',
+          label: 'low',
+          fill: false,
+          hidden: {{ line_4_data_hidden }}
+        },{
+          data: {{ line_5_data|safe }},
+          backgroundColor: '#ef0101',
+          borderColor: '#ef0101',
+          label: 'high',
+          fill: false,
+          hidden: {{ line_5_data_hidden }}
+        },{
+          data: {{ line_6_data|safe }},
+          backgroundColor: '#f7f7f7',
+          borderColor: '#f7f7f7',
+          label: 'low/high diff',
+          fill: false,
+          hidden: {{ line_6_data_hidden }}
+        },{
+          data: {{ line_7_data|safe }},
+          backgroundColor: '#007bff',
+          borderColor: '#007bff',
+          label: 'volume',
+          fill: false,
+          hidden: {{ line_7_data_hidden }}
+        }],
+        labels: {{ labels|safe }}
+      },
+      options: {
+        responsive: true,
+        legend: {
+            labels: {
+                fontColor: 'white'
+            }
+        },
+        scales: {
+            xAxes: [{
+                display: true,
+                gridLines: {
+                    color: '#272c30'
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'date',
+                    fontColor: '#007bff',
+                    fontSize: 20
+                },
+                ticks: {
+                    fontColor: 'white'
+                }
+            }],
+            yAxes: [{
+                display: true,
+                gridLines: {
+                    color: '#272c30'
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'stock price (usd) or shares',
+                    fontColor: '#007bff',
+                    fontSize: 20
+                },
+                ticks: {
+                    beginAtZero: {{ line_chart_y_axis_start_at_zero }},
+                    fontColor: 'white',
+                }
+            }]
+        }
+      }
+    };
+
+    window.onload = function() {
+      var ctx = document.getElementById('stock-chart').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+    };
+
+  </script>
+{% endblock %}

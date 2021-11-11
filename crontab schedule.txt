@@ -1,0 +1,4 @@
+0 7 * * 2-6 /home/ubuntu/stocks/env/bin/python3 /home/ubuntu/stocks/data_pull/daily_stock_info/pull_daily_stock_info.py >> /home/ubuntu/stocks/data_pull/daily_stock_info/cron.log 2>&1
+5 7 * * 2-6 /home/ubuntu/stocks/env/bin/python3 /home/ubuntu/stocks/data_pull/stock_recommendations/pull_stock_recommendations.py >> /home/ubuntu/stocks/data_pull/stock_recommendations/cron.log 2>&1
+10 7 * * 2-6 /home/ubuntu/stocks/env/bin/python3 /home/ubuntu/stocks/data_analysis/daily_stock_analysis.py >> /home/ubuntu/stocks/data_analysis/cron.log 2>&1
+20 7 * * 2-6 /home/ubuntu/stocks/env/bin/python3 /home/ubuntu/stocks/stock_alerts/daily_stock_alerts.py >> /home/ubuntu/stocks/stock_alerts/cron.log 2>&1

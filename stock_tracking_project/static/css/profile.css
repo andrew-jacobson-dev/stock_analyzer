@@ -1,0 +1,47 @@
+:root{
+    --light-color: #F2EFE9;
+    --dark-color: #191516;
+    --green-color: #00B295;
+    --red-color: #AB2346;
+    --yellow-color: #FFBA08;
+    --link-color: #2D7DD2;
+    --btn-primary-color: #2D7DD2;
+    --btn-secondary-color: #F2EFE9;
+}
+.fa-profile {
+    color: var(--red-color)!important;
+}
+
+.list-group-item {
+    background-color: var(--light-color)!important;
+    color: var(--link-color)!important;
+}
+
+.list-group-item[aria-selected="true"] {
+    background-color: var(--green-color)!important;
+    color: var(--dark-color)!important;
+    border-color: var(--green-color)!important;
+    font-weight: bold;
+}
+
+.list-group-item:hover {
+    background-color: var(--green-color)!important;
+    color: var(--dark-color)!important;
+    border-color: var(--green-color)!important;
+    text-decoration: none;
+}
+
+.profile-info-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.profile-settings-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.delete-account-body {
+    padding-left: 15px;
+    padding-right: 15px;
+}

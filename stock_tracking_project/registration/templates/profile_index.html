@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<!-- Custom CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
+
+<br>
+<div class="row mb-3">
+    <div class="col">
+        <div class="d-flex align-items-start">
+          <div class="list-group flex-column mr-3" id="tab" role="tablist" aria-orientation="vertical">
+            <a class="list-group-item active" id="profile-info-tab" data-toggle="tab" href="#profile-info" role="tab" aria-controls="profile-info" aria-selected="true"><i class="fas fa-user-circle fa-2x fa-profile"></i></a>
+            <a class="list-group-item" id="profile-settings-tab" data-toggle="tab" href="#profile-settings" role="tab" aria-controls="profile-settings" aria-selected="false"><i class="fas fa-cog fa-2x fa-profile"></i></a>
+            <a class="list-group-item" id="delete-account-tab" data-toggle="tab" href="#delete-account" role="tab" aria-controls="delete-account" aria-selected="false"><i class="fas fa-trash-alt fa-2x fa-profile"></i></a>
+          </div>
+          <div class="tab-content" id="tabContent">
+            <div class="tab-pane show active" id="profile-info" role="tabpanel" aria-labelledby="profile-info-tab">
+                <h2 class="custom-h2 mb-3">information</h2>
+                <div class="profile-info-body text-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <br>
+                            <h5 class="text-light">[ update ]</h5>
+                            <hr class="hr-ruler-white">
+                            <form action="{% url 'profile_index' %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    <div class="col">
+                                        {{ edit_user_form.first_name.label|lower }}:
+                                    </div>
+                                    <div class="col">
+                                         {{ edit_user_form.first_name }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        {{ edit_user_form.last_name.label|lower }}:
+                                    </div>
+                                    <div class="col">
+                                         {{ edit_user_form.last_name }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        {{ edit_user_form.email.label|lower }}:
+                                    </div>
+                                    <div class="col">
+                                         {{ edit_user_form.email }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        {{ edit_user_form.username.label|lower }}:
+                                    </div>
+                                    <div class="col">
+                                         {{ edit_user_form.username }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col text-center">
+                                        {% if edit_user_form.errors %}
+                                            <ul class="list-group">
+                                                {% for key, value in edit_user_form.errors.items %}
+                                                    <li class="list-group-item list-group-item-danger">{{ key|escape }}: {{ value|escape }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col text-center">
+                                        <button type="submit" class="btn btn-primary pl-5 pr-5" id="save-user-info" name="save-user-info" disabled="true">save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="profile-settings" role="tabpanel" aria-labelledby="profile-settings-tab">
+                <h2 class="custom-h2 mb-3">settings</h2>
+                <div class="profile-settings-body text-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <br>
+                            <h5 class="text-light">[ summary page ]</h5>
+                            <hr class="hr-ruler-white">
+                            <form action="{% url 'profile_index' %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <h5 class="text-green">alerts</h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <h5 class="text-green">transactions</h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <h5 class="text-green">portfolio</h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col text-center">
+                                        <button type="submit" class="btn btn-primary pl-5 pr-5" name="save-summary-pg-settings">save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <br>
+                            <h5 class="text-light">[ alerts ]</h5>
+                            <hr class="hr-ruler-white">
+                            <form action="{% url 'profile_index' %}" method="post">
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <h5 class="text-green">expert recommendations</h5>
+                                        <h5 class="text-red font-italic small"><div id="error-expert-rec"></div></h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.expert_rec_send_email.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_send_email }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="font-italic">{{ user.email }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.expert_rec_send_text.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_send_text }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="font-italic">{{ user.userprofile.t_phone_number }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.expert_rec_buy.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_buy }}
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.expert_rec_sell.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_sell }}
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.expert_rec_other.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_other }}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <h5 class="text-green">custom alerts</h5>
+                                        <h5 class="text-red font-italic small"><div id="error-custom-alerts"></div></h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.custom_alerts_send_email.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_send_email }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="font-italic">{{ user.email }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.custom_alerts_send_text.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_send_text }}
+                                    </div>
+                                    <div class="col">
+                                        <span class="font-italic">{{ user.userprofile.t_phone_number }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.custom_alerts_buy.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_buy }}
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.custom_alerts_sell.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_sell }}
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ notification_settings_form.custom_alerts_other.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_other }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col text-center">
+                                        <button type="submit" class="btn btn-primary pl-5 pr-5" id="save-notification-settings" name="save-notification-settings">save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-light">[ transactions ]</h5>
+                            <hr class="hr-ruler-white">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-light">[ portfolio ]</h5>
+                            <hr class="hr-ruler-white">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-light">[ graphical analyzer ]</h5>
+                            <hr class="hr-ruler-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="delete-account" role="tabpanel" aria-labelledby="delete-account-tab">
+                <h2 class="custom-h2 mb-3">delete account</h2>
+                <div class="delete-account-body text-light">
+                    delete your account
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <!--    <div class="col-md-3">-->
+<!--        <div class="card">-->
+<!--          <div class="card-header">-->
+<!--            {{ user.username }}-->
+<!--          </div>-->
+<!--          <ul class="list-group list-group-flush">-->
+<!--            <li class="list-group-item text-right active">basic info</li>-->
+<!--            <li class="list-group-item text-right">notification settings</li>-->
+<!--            <li class="list-group-item text-right">delete account</li>-->
+<!--          </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-md-9">-->
+<!--        <h2 class="custom-h2">basic info</h2>-->
+<!--        <br>-->
+<!--        <div class="jobs-section-body">-->
+
+<!--        </div>-->
+<!--    </div>-->
+</div>
+<br>
+
+{% endblock %}

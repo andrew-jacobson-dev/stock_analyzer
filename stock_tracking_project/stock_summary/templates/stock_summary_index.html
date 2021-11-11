@@ -1,0 +1,958 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<!-- Custom CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/stock_summary.css' %}">
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <h2 class="text-light">[ actual investments ]</h2>
+        <hr class="hr-ruler-white">
+        <div class="row">
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">invested</h5>
+                        <h2 class="card-text">$ {{ user_stocks_owned_invested }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">value</h5>
+                        <h2 class="card-text">$
+                            {% if user_stocks_owned_value > user_stocks_owned_invested  %}
+                                <span class="positive">{{ user_stocks_owned_value }}</span>
+                            {% elif user_stocks_owned_value < user_stocks_owned_invested %}
+                                <span class="negative">{{ user_stocks_owned_value }}</span>
+                            {% else %}
+                                {{ user_stocks_owned_value }}
+                            {% endif %}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">stocks owned</h5>
+                        <h2 class="card-text">{{ user_stocks_owned_shares }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <h2 class="text-light">[ mock investments ]</h2>
+        <hr class="hr-ruler-white">
+        <div class="row">
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">invested</h5>
+                        <h2 class="card-text">$ {{ user_stocks_mock_owned_invested }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">value</h5>
+                        <h2 class="card-text">$
+                            {% if user_stocks_mock_owned_value > user_stocks_mock_owned_invested  %}
+                                <span class="positive">{{ user_stocks_mock_owned_value }}</span>
+                            {% elif user_stocks_mock_owned_value < user_stocks_mock_owned_invested %}
+                                <span class="negative">{{ user_stocks_mock_owned_value }}</span>
+                            {% else %}
+                                {{ user_stocks_mock_owned_value }}
+                            {% endif %}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-center financials-card">
+                    <div class="card-body">
+                        <h5 class="card-title">stocks owned</h5>
+                        <h2 class="card-text">{{ user_stocks_mock_owned_shares }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<br>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="#" id="alerts-header">
+            <h2 class="custom-h2"><i class="fas fa-chevron-circle-down pr-4"></i>alerts</h2>
+        </a>
+        <div class="alert-section-body">
+            <br>
+            <div class="row">
+                <div class="col">
+                    <h2 class="small text-light font-italic text-left">alerts from {{ most_recent_close_date }}</h2>
+                </div>
+                <div class="col">
+                    <!-- customize alerts modal -->
+                    <h2 class="small text-right"><a href=#notification-settings-modal class="text-light-custom-a" data-toggle="modal">notification settings <i class="fas fa-cog"></i></a></h2>
+                    <div id="notification-settings-modal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title text-dark">notification settings</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <form action="{% url 'stock_summary_index' %}" method="post">
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <h5 class="text-green">expert recommendations</h5>
+                                                <h5 class="text-red font-italic small"><div id="error-expert-rec"></div></h5>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.expert_rec_send_email.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_send_email }}
+                                            </div>
+                                            <div class="col">
+                                                <span class="font-italic">{{ user.email }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.expert_rec_send_text.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_send_text }}
+                                            </div>
+                                            <div class="col">
+                                                <span class="font-italic">{{ user.userprofile.t_phone_number }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.expert_rec_buy.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_buy }}
+                                            </div>
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.expert_rec_sell.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_sell }}
+                                            </div>
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.expert_rec_other.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.expert_rec_other }}
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <h5 class="text-green">custom alerts</h5>
+                                                <h5 class="text-red font-italic small"><div id="error-custom-alerts"></div></h5>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.custom_alerts_send_email.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_send_email }}
+                                            </div>
+                                            <div class="col">
+                                                <span class="font-italic">{{ user.email }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.custom_alerts_send_text.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_send_text }}
+                                            </div>
+                                            <div class="col">
+                                                <span class="font-italic">{{ user.userprofile.t_phone_number }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.custom_alerts_buy.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_buy }}
+                                            </div>
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.custom_alerts_sell.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_sell }}
+                                            </div>
+                                            <div class="col">
+                                                <strong>{{ notification_settings_form.custom_alerts_other.label }}</strong>&nbsp;&nbsp;{{ notification_settings_form.custom_alerts_other }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary pl-5 pr-5" id="save-notification-settings" name="save-notification-settings">save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end of customize alerts modal -->
+                </div>
+            </div>
+            <br>
+            <h5 class="text-light">[ expert recommendations ]</h5>
+            <hr class="hr-ruler-white">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="recommendations-list" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#recommendations-buy" data-toggle="tab" aria-controls="recommendations-buy" aria-selected="true">buy ({{ buy_recommendations.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#recommendations-sell" data-toggle="tab" aria-controls="recommendations-sell" aria-selected="false">sell ({{ sell_recommendations.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#recommendations-other" data-toggle="tab" aria-controls="recommendations-other" aria-selected="false">other ({{ other_recommendations.count }})</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="recommendations-buy" role="tabpanel" aria-labelledby="recommendations-buy-tab">
+                            <br>
+                            {% if buy_recommendations %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">firm</th>
+                                                <th scope="col">grade</th>
+                                                <th scope="col">from grade</th>
+                                                <th scope="col">action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for recommendation in buy_recommendations %}
+                                                <tr class="text-dark">
+                                                    <td>{{ recommendation.stock.n_symbol }}</td>
+                                                    <td>{{ recommendation.t_firm }}</td>
+                                                    <td>{{ recommendation.t_to_grade|lower }}</td>
+                                                    <td>
+                                                        {% if recommendation.t_from_grade %}
+                                                            {{ recommendation.t_from_grade|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if recommendation.t_action %}
+                                                            {{ recommendation.t_action|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no buy recommendations today</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="recommendations-sell" role="tabpanel" aria-labelledby="recommendations-sell-tab">
+                            <br>
+                            {% if sell_recommendations %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">firm</th>
+                                                <th scope="col">grade</th>
+                                                <th scope="col">from grade</th>
+                                                <th scope="col">action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for recommendation in sell_recommendations %}
+                                                <tr class="text-dark">
+                                                    <td>{{ recommendation.stock.n_symbol }}</td>
+                                                    <td>{{ recommendation.t_firm }}</td>
+                                                    <td>{{ recommendation.t_to_grade|lower }}</td>
+                                                    <td>
+                                                        {% if recommendation.t_from_grade %}
+                                                            {{ recommendation.t_from_grade|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if recommendation.t_action %}
+                                                            {{ recommendation.t_action|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no sell recommendations today</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="recommendations-other" role="tabpanel" aria-labelledby="recommendations-other-tab">
+                            <br>
+                            {% if other_recommendations %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">firm</th>
+                                                <th scope="col">grade</th>
+                                                <th scope="col">from grade</th>
+                                                <th scope="col">action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for recommendation in other_recommendations %}
+                                                <tr class="text-dark">
+                                                    <td>{{ recommendation.stock.n_symbol }}</td>
+                                                    <td>{{ recommendation.t_firm }}</td>
+                                                    <td>{{ recommendation.t_to_grade|lower }}</td>
+                                                    <td>
+                                                        {% if recommendation.t_from_grade %}
+                                                            {{ recommendation.t_from_grade|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if recommendation.t_action %}
+                                                            {{ recommendation.t_action|lower }}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no other recommendations today</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <h5 class="text-light">[ custom alerts ]</h5>
+            <hr class="hr-ruler-white">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="alerts-list" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#alerts-buy" data-toggle="tab" aria-controls="alerts-buy" aria-selected="true">buy ({{ stock_alerts_buy_count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#alerts-sell" data-toggle="tab" aria-controls="alerts-sell" aria-selected="false">sell ({{ stock_alerts_sell_count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#alerts-other" data-toggle="tab" aria-controls="alerts-other" aria-selected="false">other ({{ stock_alerts_other_count }})</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="alerts-buy" role="tabpanel" aria-labelledby="alerts-buy-tab">
+                            <br>
+                            {% if stock_alerts_buy %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">action</th>
+                                                <th scope="col">current price</th>
+                                                <th scope="col">days down</th>
+                                                <th scope="col">total change</th>
+                                                <th scope="col">52 wk high</th>
+                                                <th scope="col">52 wk low</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock in stock_alerts_buy %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock.stockeod.stock.n_symbol }}</td>
+                                                    <td>{{ stock.t_status }}</td>
+                                                    <td>$ {{ stock.stockeod.a_close }}</td>
+                                                    <td>{{ stock.q_consecutive_days_down }}</td>
+                                                    <td>{{ stock.q_consecutive_days_percent_change }} % ($ {{ stock.a_consecutive_days_price_change }})</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_high }} ({{ stock.a_close_to_fifty_two_week_high }} %)</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_low }} ({{ stock.a_close_to_fifty_two_week_low }} %)</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no buy alerts today</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="alerts-sell" role="tabpanel" aria-labelledby="alerts-sell-tab">
+                            <br>
+                            {% if stock_alerts_sell %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">action</th>
+                                                <th scope="col">current price</th>
+                                                <th scope="col">days down</th>
+                                                <th scope="col">total change</th>
+                                                <th scope="col">52 wk high</th>
+                                                <th scope="col">52 wk low</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock in stock_alerts_sell %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock.stockeod.stock.n_symbol }}</td>
+                                                    <td>{{ stock.t_status }}</td>
+                                                    <td>$ {{ stock.stockeod.a_close }}</td>
+                                                    <td>{{ stock.q_consecutive_days_down }}</td>
+                                                    <td>{{ stock.q_consecutive_days_percent_change }} % ($ {{ stock.a_consecutive_days_price_change }})</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_high }} ({{ stock.a_close_to_fifty_two_week_high }} %)</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_low }} ({{ stock.a_close_to_fifty_two_week_low }} %)</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no sell alerts today</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="alerts-other" role="tabpanel" aria-labelledby="alerts-other-tab">
+                            <br>
+                            {% if stock_alerts_other %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">action</th>
+                                                <th scope="col">current price</th>
+                                                <th scope="col">days down</th>
+                                                <th scope="col">total change</th>
+                                                <th scope="col">volume</th>
+                                                <th scope="col">volume trend</th>
+                                                <th scope="col">total change</th>
+                                                <th scope="col">52 wk high</th>
+                                                <th scope="col">52 wk low</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock in stock_alerts_other %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock.stockeod.stock.n_symbol }}</td>
+                                                    <td>{{ stock.t_status }}</td>
+                                                    <td>$ {{ stock.stockeod.a_close }}</td>
+                                                    <td>{{ stock.q_consecutive_days_down }}</td>
+                                                    <td>{{ stock.q_consecutive_days_percent_change }} % ($ {{ stock.a_consecutive_days_price_change }})</td>
+                                                    <td>{{ stock.stockeod.a_volume }}</td>
+                                                    <td>{{ stock.q_consecutive_days_volume_growth }}</td>
+                                                    <td>{{ stock.q_consecutive_days_volume_percent_change }} % ({{ stock.a_consecutive_days_volume_change }})</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_high }} ({{ stock.a_close_to_fifty_two_week_high }} %)</td>
+                                                    <td>$ {{ stock.stockeod.a_fifty_two_week_low }} ({{ stock.a_close_to_fifty_two_week_low }} %)</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no other alerts today</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="#" id="transactions-header">
+            <h2 class="custom-h2"><i class="fas fa-chevron-circle-down pr-4"></i>transactions</h2>
+        </a>
+        <br>
+        <div class="transactions-section-body">
+            <div class="row">
+                <div class="col">
+                    <h2 class="small text-light font-italic text-left">most recent transactions</h2>
+                </div>
+                <div class="col">
+                    <h2 class="small text-right"><a href="#" class="text-light-custom-a">see all transactions <i class="fas fa-eye"></i></a></h2>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-2">
+                    <!-- the add button -->
+                    <h2 class="text-light text-center"><a class="btn btn-primary btn-block pl-5 pr-5" href=#add-transaction-modal data-toggle="modal">add</a></h2>
+                    <div id="add-transaction-modal" class="modal fade" role="dialog">
+                      <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h4 class="modal-title text-dark">add transaction</h4>
+                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          </div>
+                          <form action="{% url 'stock_summary_index' %}" method="post">
+                              <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="form-group row">
+                                        <div class="col">
+                                            <strong>{{ add_transaction_form.transaction_choice_field.label }}</strong>{{ add_transaction_form.transaction_choice_field }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col">
+                                            <strong>{{ add_transaction_form.ticker_symbol_choice.label }}</strong>{{ add_transaction_form.ticker_symbol_choice }}
+                                        </div>
+                                        <div class="col">
+                                            <strong>{{ add_transaction_form.ticker_symbol_text.label }}</strong>{{ add_transaction_form.ticker_symbol_text }}
+                                        </div>
+                                    </div>
+                                    <div id="buy-sell-only">
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <strong>{{ add_transaction_form.shares.label }}</strong>{{ add_transaction_form.shares }}
+                                            </div>
+                                            <div class="col">
+                                                <strong>{{ add_transaction_form.share_price.label }}</strong>{{ add_transaction_form.share_price }}
+                                            </div>
+                                            <div class="col">
+                                                <strong id="total-transaction-amount-label">{{ add_transaction_form.total_amount.label }}</strong>{{ add_transaction_form.total_amount }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col">
+                                            <strong>{{ add_transaction_form.date_executed.label }}</strong>{{ add_transaction_form.date_executed }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col">
+                                            <strong>{{ add_transaction_form.user_notes.label }}</strong>{{ add_transaction_form.user_notes }}
+                                        </div>
+                                    </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary pl-5 pr-5" name="add-transaction">add</button>
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+                              </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- end of the add button -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.extra_tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="col-md-10">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover table-striped">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">date</th>
+                                    <th scope="col">action</th>
+                                    <th scope="col">stock</th>
+                                    <th scope="col">shares</th>
+                                    <th scope="col">share price</th>
+                                    <th scope="col">total</th>
+                                    <th scope="col">notes</th>
+                                    <th scope="col">actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                    <tr class="text-light">
+                                        <td>{{ transaction.d_executed }}</td>
+                                        <td>{{ transaction.t_transaction_type|lower }}</td>
+                                        <td>{{ transaction.userstock.stock.n_symbol }}</td>
+                                        <td>
+                                            {% if transaction.q_shares %}
+                                                {{ transaction.q_shares }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.a_share_price %}
+                                                $ {{ transaction.a_share_price }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.a_invested %}
+                                                $ {{ transaction.a_invested }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.t_notes %}
+                                                {{ transaction.t_notes }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td><a href=#>edit</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<br>-->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="#" id="portfolio-header">
+            <h2 class="custom-h2"><i class="fas fa-chevron-circle-down pr-4"></i>portfolio</h2>
+        </a>
+        <br>
+        <div class="portfolio-section-body">
+            <div class="row">
+                <div class="col">
+                    <h2 class="small text-light font-italic">numbers as of close {{ most_recent_close_date }}</h2>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="portfolio-list" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#portfolio-owned" data-toggle="tab" aria-controls="portfolio-owned" aria-selected="true">owned ({{ stocks_owned_data.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio-mock-owned" data-toggle="tab" aria-controls="portfolio-mock-owned" aria-selected="true">mock owned ({{ stocks_mock_owned_data.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio-watching" data-toggle="tab" aria-controls="portfolio-watching" aria-selected="false">watching ({{ stocks_watching_data.count }})</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="portfolio-owned" role="tabpanel" aria-labelledby="portfolio-owned-tab">
+                            <br>
+                            {% if stocks_owned_data %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">price</th>
+                                                <th scope="col">change</th>
+                                                <th scope="col">volume</th>
+                                                <th scope="col">avg volume</th>
+                                                <th scope="col">open</th>
+                                                <th scope="col">open/close change</th>
+                                                <th scope="col">52 week low</th>
+                                                <th scope="col">52 week high</th>
+                                                <th scope="col">forward eps</th>
+                                                <th scope="col">trailing eps</th>
+                                                <th scope="col">shares</th>
+                                                <th scope="col">invested</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock_owned in stocks_owned_data %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock_owned.stock.t_short_name }} [{{ stock_owned.stock.n_symbol }}]</td>
+                                                    <td>$ {{ stock_owned.a_close }}</td>
+                                                    <td>
+                                                        {% if stock_owned.a_close_delta >= 0 %}
+                                                            <span class="positive">+{{ stock_owned.a_close_delta }}</span>
+                                                        {% else %}
+                                                            <span class="negative">{{ stock_owned.a_close_delta }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ stock_owned.a_volume }}</td>
+                                                    <td>{{ stock_owned.a_avg_volume }}</td>
+                                                    <td>{{ stock_owned.a_open }}</td>
+                                                    <td>{{ stock_owned.a_open_close_delta }}</td>
+                                                    <td>{{ stock_owned.a_fifty_two_week_low }}</td>
+                                                    <td>{{ stock_owned.a_fifty_two_week_high }}</td>
+                                                    <td>{{ stock_owned.a_forward_eps }}</td>
+                                                    <td>{{ stock_owned.a_trailing_eps }}</td>
+                                                    <td>
+                                                        {% for key, value in user_stocks_owned_ids_shares.items %}
+                                                            {% if key == stock_owned.stock_id %}
+                                                                {{ value }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        {% for key, value in user_stocks_owned_ids_invested.items %}
+                                                            {% if key == stock_owned.stock_id %}
+                                                                $ {{ value }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no owned stocks</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="portfolio-mock-owned" role="tabpanel" aria-labelledby="portfolio-mock-owned-tab">
+                            <br>
+                            {% if stocks_mock_owned_data %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">price</th>
+                                                <th scope="col">change</th>
+                                                <th scope="col">volume</th>
+                                                <th scope="col">avg volume</th>
+                                                <th scope="col">open</th>
+                                                <th scope="col">close</th>
+                                                <th scope="col">52 week low</th>
+                                                <th scope="col">52 week high</th>
+                                                <th scope="col">forward eps</th>
+                                                <th scope="col">trailing eps</th>
+                                                <th scope="col">shares</th>
+                                                <th scope="col">invested</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock_mock_owned in stocks_mock_owned_data %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock_mock_owned.stock.t_short_name }} [{{ stock_mock_owned.stock.n_symbol }}]</td>
+                                                    <td>$ {{ stock_mock_owned.a_close }}</td>
+                                                    <td>
+                                                        {% if stock_mock_owned.a_close_delta >= 0 %}
+                                                            <span class="positive">+{{ stock_mock_owned.a_close_delta }}</span>
+                                                        {% else %}
+                                                            <span class="negative">{{ stock_mock_owned.a_close_delta }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ stock_mock_owned.a_volume }}</td>
+                                                    <td>{{ stock_mock_owned.a_avg_volume }}</td>
+                                                    <td>{{ stock_mock_owned.a_open }}</td>
+                                                    <td>{{ stock_mock_owned.a_open_close_delta }}</td>
+                                                    <td>{{ stock_mock_owned.a_fifty_two_week_low }}</td>
+                                                    <td>{{ stock_mock_owned.a_fifty_two_week_high }}</td>
+                                                    <td>{{ stock_mock_owned.a_forward_eps }}</td>
+                                                    <td>{{ stock_mock_owned.a_trailing_eps }}</td>
+                                                    <td>
+                                                        {% for key, value in user_stocks_mock_owned_ids_shares.items %}
+                                                            {% if key == stock_mock_owned.stock_id %}
+                                                                {{ value }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        {% for key, value in user_stocks_mock_owned_ids_invested.items %}
+                                                            {% if key == stock_mock_owned.stock_id %}
+                                                                $ {{ value }}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no mock owned stocks</p>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="portfolio-watching" role="tabpanel" aria-labelledby="portfolio-watching-tab">
+                            <br>
+                            {% if stocks_watching_data %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover table-striped table-bordered">
+                                        <thead class="thead-green">
+                                            <tr>
+                                                <th scope="col">stock</th>
+                                                <th scope="col">price</th>
+                                                <th scope="col">change</th>
+                                                <th scope="col">volume</th>
+                                                <th scope="col">avg volume</th>
+                                                <th scope="col">open</th>
+                                                <th scope="col">close</th>
+                                                <th scope="col">52 week low</th>
+                                                <th scope="col">52 week high</th>
+                                                <th scope="col">forward eps</th>
+                                                <th scope="col">trailing eps</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for stock_watching in stocks_watching_data %}
+                                                <tr class="text-dark">
+                                                    <td>{{ stock_watching.stock.t_short_name }} [{{ stock_watching.stock.n_symbol }}]</td>
+                                                    <td>$ {{ stock_watching.a_close }}</td>
+                                                    <td>
+                                                        {% if stock_watching.a_close_delta >= 0 %}
+                                                            <span class="positive">+{{ stock_watching.a_close_delta }}</span>
+                                                        {% else %}
+                                                            <span class="negative">{{ stock_watching.a_close_delta }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ stock_watching.a_volume }}</td>
+                                                    <td>{{ stock_watching.a_avg_volume }}</td>
+                                                    <td>{{ stock_watching.a_open }}</td>
+                                                    <td>{{ stock_watching.a_open_close_delta }}</td>
+                                                    <td>{{ stock_watching.a_fifty_two_week_low }}</td>
+                                                    <td>{{ stock_watching.a_fifty_two_week_high }}</td>
+                                                    <td>{{ stock_watching.a_forward_eps }}</td>
+                                                    <td>{{ stock_watching.a_trailing_eps }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-dark">no watched stocks</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="row mb-3">-->
+<!--    <div class="col-md-6">-->
+<!--        <h2 class="custom-h2">-->
+<!--            watching ({{ stocks_watching_data.count }})-->
+<!--        </h2>-->
+<!--        <br>-->
+<!--        <div class="watching-section-body">-->
+<!--            <div class="row">-->
+<!--                <div class="col">-->
+<!--                    <h2 class="small text-light font-italic">numbers as of close {{ most_recent_close_date }}</h2>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <br>-->
+<!--            <div class="accordion" id="accordion1">-->
+<!--                {% for stock_watching in stocks_watching_data %}-->
+<!--                    <div class="card mb-3 text-light">-->
+<!--                        <div class="card-header" id="heading1{{ forloop.counter }}" data-parent="#accordion1">-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-sm-8">-->
+<!--                                    <h5 class="mb-0 text-dark">-->
+<!--                                        <strong>{{ stock_watching.stock.t_short_name }} [{{ stock_watching.stock.n_symbol }}] </strong>-->
+<!--                                    </h5>-->
+<!--                                </div>-->
+<!--                                <div class="col-sm-4">-->
+<!--                                    <h5 class="mb-0 text-dark">-->
+<!--                                        <div class="col">-->
+<!--                                            $ {{ stock_watching.a_close }}-->
+<!--                                            {% if stock_watching.a_close_delta >= 0 %}-->
+<!--                                                <span class="positive">+{{ stock_watching.a_close_delta }}</span>-->
+<!--                                            {% else %}-->
+<!--                                                <span class="negative">{{ stock_watching.a_close_delta }}</span>-->
+<!--                                            {% endif %}-->
+<!--                                        </div>-->
+<!--                                    </h5>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                                <div class="col">-->
+<!--                                    <a id="show-details-text1{{ forloop.counter }}" class="collapsed1" data-toggle="collapse" href="#collapse1{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse1{{ forloop.counter }}">more</a>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div id="collapse1{{ forloop.counter }}" class="collapse" aria-labelledby="heading1{{ forloop.counter }}" data-parent="#accordion1">-->
+<!--                            <div class="card-body">-->
+<!--                                <p class="text-muted">-->
+<!--                                    <strong>low-high: </strong>{{ stock_watching.a_low }}-{{ stock_watching.a_high }} ({{ stock_watching.a_low_high_delta }})-->
+<!--                                    <br>-->
+<!--                                    <strong>52 wk: </strong>{{ stock_watching.a_fifty_two_week_low }}-{{ stock_watching.a_fifty_two_week_high }} ({{ stock_watching.a_fifty_two_week_delta }})-->
+<!--                                </p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="col-md-6">-->
+<!--        <h2 class="custom-h2">-->
+<!--            owned ({{ stocks_owned_data.count }})-->
+<!--&lt;!&ndash;            <i class="fas fa-dollar-sign"></i>&ndash;&gt;-->
+<!--        </h2>-->
+<!--        <br>-->
+<!--        <div class="watching-section-body">-->
+<!--            <div class="row">-->
+<!--                <div class="col">-->
+<!--                    <h2 class="small text-light font-italic">numbers as of close {{ most_recent_close_date }}</h2>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <br>-->
+<!--            <div class="accordion" id="accordion2">-->
+<!--                {% for stock_owned in stocks_owned_data %}-->
+<!--                    <div class="card mb-3 text-light">-->
+<!--                        <div class="card-header" id="heading2{{ forloop.counter }}" data-parent="#accordion2">-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-sm-8">-->
+<!--                                    <h5 class="mb-0 text-dark">-->
+<!--                                        <strong>{{ stock_owned.stock.t_short_name }} [{{ stock_owned.stock.n_symbol }}]</strong>-->
+<!--                                    </h5>-->
+<!--                                </div>-->
+<!--                                <div class="col-sm-4">-->
+<!--                                    <h5 class="mb-0 text-dark">-->
+<!--                                        <div class="col">-->
+<!--                                            $ {{ stock_owned.a_close }}-->
+<!--                                            {% if stock_owned.a_close_delta >= 0 %}-->
+<!--                                                <span class="positive">+{{ stock_owned.a_close_delta }}</span>-->
+<!--                                            {% else %}-->
+<!--                                                <span class="negative">{{ stock_owned.a_close_delta }}</span>-->
+<!--                                            {% endif %}-->
+<!--                                        </div>-->
+<!--                                    </h5>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                                <div class="col">-->
+<!--                                    <a id="show-details-text2{{ forloop.counter }}" class="collapsed2" data-toggle="collapse" href="#collapse2{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse2{{ forloop.counter }}">more</a>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div id="collapse2{{ forloop.counter }}" class="collapse" aria-labelledby="heading2{{ forloop.counter }}" data-parent="#accordion2">-->
+<!--                            <div class="card-body">-->
+<!--                                <p class="text-muted">-->
+<!--                                    <strong>low-high: </strong>{{ stock_owned.a_low }}-{{ stock_owned.a_high }} ({{ stock_owned.a_low_high_delta }})-->
+<!--                                    <br>-->
+<!--                                    <strong>52 wk: </strong>{{ stock_owned.a_fifty_two_week_low }}-{{ stock_owned.a_fifty_two_week_high }} ({{ stock_owned.a_fifty_two_week_delta }})-->
+<!--                                </p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<br>
+{% endblock %}
